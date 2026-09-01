@@ -63,6 +63,27 @@ export interface GuideTool {
 export const guideTools: GuideTool[] = [
   // ── 聊天与办公 ────────────────────────────────────────────────────────
   {
+    id: 'workbuddy',
+    name: 'WorkBuddy / CodeBuddy',
+    category: 'chat',
+    status: 'green',
+    recommended: true,
+    summary: '国产办公智能体,可操作本地文件',
+    steps: [
+      '打开 WorkBuddy,点击左下角账户头像',
+      '进入「设置」→「模型」,点击「添加模型」',
+      '提供商选择「自定义 / Custom」',
+      '接口地址填完整地址 {{FULL_URL}}',
+      'API Key 填 sk-... 密钥',
+      '模型名称填模型广场里的完整模型 ID',
+      '第一次测试先只开「工具调用」,「图片输入」「推理模式」仅在模型明确支持时开启',
+      '保存后回到对话框选择刚添加的模型',
+    ],
+    tips: [
+      '有「完整 URL」开关的版本:填完整地址时打开开关;只填 {{BASE_URL}} 时关闭开关让软件自动补路径。两者不要同时用,否则容易 404',
+    ],
+  },
+  {
     id: 'cherry-studio',
     name: 'Cherry Studio',
     category: 'chat',
@@ -98,26 +119,6 @@ export const guideTools: GuideTool[] = [
       'API Key 填 sk-... 密钥',
       'API Path 保持 /v1/chat/completions,没有这个输入框就不用管',
       '添加模型 ID,保存并点击「检查」',
-    ],
-  },
-  {
-    id: 'workbuddy',
-    name: 'WorkBuddy / CodeBuddy',
-    category: 'chat',
-    status: 'green',
-    summary: '国产办公智能体,可操作本地文件',
-    steps: [
-      '打开 WorkBuddy,点击左下角账户头像',
-      '进入「设置」→「模型」,点击「添加模型」',
-      '提供商选择「自定义 / Custom」',
-      '接口地址填完整地址 {{FULL_URL}}',
-      'API Key 填 sk-... 密钥',
-      '模型名称填模型广场里的完整模型 ID',
-      '第一次测试先只开「工具调用」,「图片输入」「推理模式」仅在模型明确支持时开启',
-      '保存后回到对话框选择刚添加的模型',
-    ],
-    tips: [
-      '有「完整 URL」开关的版本:填完整地址时打开开关;只填 {{BASE_URL}} 时关闭开关让软件自动补路径。两者不要同时用,否则容易 404',
     ],
   },
   {
@@ -211,7 +212,100 @@ export const guideTools: GuideTool[] = [
       '先用短网页测试,再翻译 PDF 或长页面',
     ],
   },
-  // ── 编程 ─────────────────────────────────────────────────────────────
+  // ── 编程 ───────────────────────���─────────────────────────────────────
+  {
+    id: 'claude-code',
+    name: 'Claude Code',
+    category: 'coding',
+    status: 'blue',
+    recommended: true,
+    summary: '使用 Anthropic 协议,需专用地址',
+    steps: [
+      'Claude Code 使用 Anthropic Messages 协议,不能直接把 OpenAI 地址填进 ANTHROPIC_BASE_URL',
+      '只有当平台另外提供「Anthropic 专用地址」时才能配置:',
+      'export ANTHROPIC_BASE_URL="平台提供的Anthropic专用地址"',
+      'export ANTHROPIC_AUTH_TOKEN="你的密钥"',
+    ],
+    tips: [
+      '不要把 /v1/chat/completions 当作 Anthropic /v1/messages 使用。没有专用地址时请改用 Cline、Roo Code、OpenCode',
+    ],
+  },
+  {
+    id: 'codex',
+    name: 'Codex CLI',
+    category: 'coding',
+    status: 'blue',
+    recommended: true,
+    summary: '仅支持 Responses API 兼容的模型',
+    steps: [
+      'Codex 的自定义提供商使用 Responses API,不能把只支持 Chat Completions 的模型硬套进去',
+      '只有所选模型明确支持 /v1/responses 时才配置(见示例)',
+      '启动前设置对应的环境变量',
+    ],
+    snippet: {
+      label: 'config.toml',
+      code: `model = "请替换为支持Responses的模型ID"
+model_provider = "myprovider"
+
+[model_providers.myprovider]
+name = "我的中转"
+base_url = "{{BASE_URL}}"
+env_key = "MY_API_KEY"
+wire_api = "responses"`,
+    },
+    tips: [
+      '如果报 404 /responses 或持续工具调用失败,请改用 Cline、Roo Code、OpenCode,不要反复改地址碰运气',
+    ],
+  },
+  {
+    id: 'dsh',
+    name: 'DeepSeek Harness (DSH)',
+    category: 'coding',
+    status: 'green',
+    recommended: true,
+    summary: 'DeepSeek 官方开源 Agent,支持自定义 OpenAI 兼容供应商',
+    steps: [
+      '先安装 Node.js,在项目目录运行 npx @deepseek-ai/dsh web',
+      '浏览器打开 http://127.0.0.1:3080,进入「Settings」→「Models」',
+      '选择「Add a custom provider」,Provider ID 填一个小写英文名称,例如 yecai',
+      'API protocol 选择「OpenAI Completions」,Base URL 填 {{BASE_URL}}',
+      'Credential / API Key 填自己的 sk-... 密钥',
+      '添加完整模型 ID,保存后返回会话并选择项目目录开始使用',
+    ],
+    tips: [
+      'DSH 当前仍处于开发者预览阶段,升级后界面和配置格式可能变化',
+      '模型必须支持工具调用;只能聊天、不能执行任务时,先换用支持 tools/function calling 的模型',
+    ],
+  },
+  {
+    id: 'pi-agent',
+    name: 'Pi Coding Agent',
+    category: 'coding',
+    status: 'yellow',
+    recommended: true,
+    summary: '轻量可扩展的终端 Agent',
+    steps: [
+      '安装:npm install -g @mariozechner/pi-coding-agent',
+      '创建或编辑 ~/.pi/agent/models.json,按下面的示例配置',
+      '设置环境变量后启动 pi,输入 /model 选择模型',
+      '先确认基础聊天和工具调用正常,再逐个增加扩展',
+    ],
+    snippet: {
+      label: '~/.pi/agent/models.json',
+      code: `{
+  "providers": {
+    "myprovider": {
+      "baseUrl": "{{BASE_URL}}",
+      "api": "openai-completions",
+      "apiKey": "$MY_API_KEY",
+      "authHeader": true,
+      "models": [{ "id": "请替换为模型ID", "name": "中转模型" }]
+    }
+  }
+}`,
+    },
+    tips: ['不要把完整的 /chat/completions 地址写进 baseUrl'],
+  },
   {
     id: 'cline',
     name: 'Cline',
@@ -316,34 +410,6 @@ export const guideTools: GuideTool[] = [
     },
   },
   {
-    id: 'pi-agent',
-    name: 'Pi Coding Agent',
-    category: 'coding',
-    status: 'yellow',
-    summary: '轻量可扩展的终端 Agent',
-    steps: [
-      '安装:npm install -g @mariozechner/pi-coding-agent',
-      '创建或编辑 ~/.pi/agent/models.json,按下面的示例配置',
-      '设置环境变量后启动 pi,输入 /model 选择模型',
-      '先确认基础聊天和工具调用正常,再逐个增加扩展',
-    ],
-    snippet: {
-      label: '~/.pi/agent/models.json',
-      code: `{
-  "providers": {
-    "myprovider": {
-      "baseUrl": "{{BASE_URL}}",
-      "api": "openai-completions",
-      "apiKey": "$MY_API_KEY",
-      "authHeader": true,
-      "models": [{ "id": "请替换为模型ID", "name": "中转模型" }]
-    }
-  }
-}`,
-    },
-    tips: ['不要把完整的 /chat/completions 地址写进 baseUrl'],
-  },
-  {
     id: 'aider',
     name: 'Aider',
     category: 'coding',
@@ -416,55 +482,13 @@ aider --model openai/请替换为模型ID`,
     },
   },
   {
-    id: 'codex',
-    name: 'Codex CLI',
-    category: 'coding',
-    status: 'blue',
-    summary: '仅支持 Responses API 兼容的模型',
-    steps: [
-      'Codex 的自定义提供商使用 Responses API,不能把只支持 Chat Completions 的模型硬套进去',
-      '只有所选模型明确支持 /v1/responses 时才配置(见示例)',
-      '启动前设置对应的环境变量',
-    ],
-    snippet: {
-      label: 'config.toml',
-      code: `model = "请替换为支持Responses的模型ID"
-model_provider = "myprovider"
-
-[model_providers.myprovider]
-name = "我的中转"
-base_url = "{{BASE_URL}}"
-env_key = "MY_API_KEY"
-wire_api = "responses"`,
-    },
-    tips: [
-      '如果报 404 /responses 或持续工具调用失败,请改用 Cline、Roo Code、OpenCode,不要反复改地址碰运气',
-    ],
-  },
-  {
-    id: 'claude-code',
-    name: 'Claude Code',
-    category: 'coding',
-    status: 'blue',
-    summary: '使用 Anthropic 协议,需专用地址',
-    steps: [
-      'Claude Code 使用 Anthropic Messages 协议,不能直接把 OpenAI 地址填进 ANTHROPIC_BASE_URL',
-      '只有当平台另外提供「Anthropic 专用地址」时才能配置:',
-      'export ANTHROPIC_BASE_URL="平台提供的Anthropic专用地址"',
-      'export ANTHROPIC_AUTH_TOKEN="你的密钥"',
-    ],
-    tips: [
-      '不要把 /v1/chat/completions 当作 Anthropic /v1/messages 使用。没有专用地址时请改用 Cline、Roo Code、OpenCode',
-    ],
-  },
-  {
     id: 'gemini-cli',
     name: 'Gemini CLI',
     category: 'coding',
     status: 'blue',
     summary: '使用 Gemini 原生协议,需专用地址',
     steps: [
-      '只有平台提供「Gemini 专用地址」时才能配置:',
+      '只有��台提供「Gemini 专用地址」时才能配置:',
       'export GEMINI_API_KEY="你的密钥"',
       'export GOOGLE_GEMINI_BASE_URL="平台提供的Gemini专用地址"',
     ],
@@ -526,16 +550,19 @@ wire_api = "responses"`,
     id: 'cockpit-tools',
     name: 'Cockpit Tools',
     category: 'manager',
-    status: 'gray',
-    summary: '管理多个 IDE 官方账号、配额与多开',
+    status: 'green',
+    summary: '支持 Codex API Key、自定义 Base URL 与本地 API 服务',
     steps: [
-      'Cockpit Tools 管理的是「官方登录账号」,不是 API 地址。想切换 API 地址、Key、模型请用 CC Switch',
-      '先关闭准备切号或多开的目标应用,避免同时写同一份登录文件',
-      '导入账号后先刷新一次配额,确认账号、套餐和重置时间正确',
-      '只有某平台页面明确出现「API Key / Base URL / 模型 ID」时,才在该页面填写本站地址 {{BASE_URL}}',
+      '升级到最新版 Cockpit Tools,打开 Codex 账号页',
+      '选择「API Key」方式添加账号,供应商模式选「自定义」',
+      'API Key 填自己的 sk-... 密钥,Base URL 填 {{BASE_URL}}',
+      '按本站模型广场填写或同步模型 ID,协议选择与模型匹配的 Responses 或 OpenAI 兼容模式',
+      '保存并切换到该账号;需要给其他工具调用时,再到「Codex API Service」创建客户端 Key 并启用本地服务',
+      '把 Cockpit Tools 显示的本地 Base URL 和客户端 Key 填进目标工具,先发一条短消息测试',
     ],
     tips: [
-      '这类工具会读取本机登录状态。只从官方项目下载,切换前备份配置,不要把包含 Token、Cookie 的备份发给别人',
+      'Cockpit Tools 的本地 API Service 地址通常是 localhost 加动态端口,不要误填成本站上游地址',
+      '只从官方项目下载;切换前备份配置,不要把包含 Token、Cookie 或客户端 Key 的备份发给别人',
     ],
   },
   // ── 知识库与工作流 ───────────────────────────────────────────────────
@@ -678,12 +705,44 @@ export interface UseCaseRow {
 }
 
 export const useCaseRows: UseCaseRow[] = [
-  { useCase: '普通聊天、写作、看文件', tools: 'Cherry Studio、Chatbox', difficulty: '简单' },
-  { useCase: '国产办公智能体、操作本地文件', tools: 'WorkBuddy / CodeBuddy', difficulty: '简单' },
-  { useCase: '网页、PDF、字幕翻译', tools: '沉浸式翻译、流畅阅读', difficulty: '简单' },
-  { useCase: 'VS Code 里写代码', tools: 'Cline、Roo Code、Kilo Code、Continue', difficulty: '简单' },
-  { useCase: '终端里写代码', tools: 'Pi、OpenCode、Crush、Aider、Qwen Code', difficulty: '中等' },
-  { useCase: '同时切换多个 CLI 的配置', tools: 'CC Switch', difficulty: '中等' },
-  { useCase: '自建团队聊天网页', tools: 'Open WebUI、LobeChat、NextChat', difficulty: '中等' },
-  { useCase: '搭建知识库或工作流', tools: 'Dify、FastGPT、Flowise', difficulty: '较难' },
+  {
+    useCase: '国产办公智能体、操作本地文件',
+    tools: 'WorkBuddy / CodeBuddy',
+    difficulty: '简单',
+  },
+  {
+    useCase: '普通聊天、写作、看文件',
+    tools: 'Cherry Studio、Chatbox',
+    difficulty: '简单',
+  },
+  {
+    useCase: '网页、PDF、字幕翻译',
+    tools: '沉浸式翻译、流畅阅读',
+    difficulty: '简单',
+  },
+  {
+    useCase: '终端里写代码',
+    tools: 'Claude Code、Codex、Pi、OpenCode、Crush',
+    difficulty: '中等',
+  },
+  {
+    useCase: 'VS Code 里写代码',
+    tools: 'Cline、Roo Code、Kilo Code、Continue',
+    difficulty: '简单',
+  },
+  {
+    useCase: '同时切换多个 CLI 的配置',
+    tools: 'CC Switch',
+    difficulty: '中等',
+  },
+  {
+    useCase: '自建团队聊天网页',
+    tools: 'Open WebUI、LobeChat、NextChat',
+    difficulty: '中等',
+  },
+  {
+    useCase: '搭建知识库或工作流',
+    tools: 'Dify、FastGPT、Flowise',
+    difficulty: '较难',
+  },
 ]

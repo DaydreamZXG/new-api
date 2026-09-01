@@ -25,14 +25,31 @@ import { Button } from '@/components/ui/button'
 interface HeroProps {
   className?: string
   isAuthenticated?: boolean
+  maxSavingsPercent?: number
 }
 
 /** Floating candy-colored model chips around the demo card. */
 const modelChips = [
-  { name: 'GPT-5', className: 'dopa-float -top-4 -left-6', hue: 'var(--chart-4)' },
-  { name: 'Claude', className: 'dopa-float-alt top-16 -right-8', hue: 'var(--chart-2)' },
-  { name: 'Gemini', className: 'dopa-float bottom-24 -left-10', hue: 'var(--chart-3)' },
-  { name: 'DeepSeek', className: 'dopa-float-alt -bottom-4 right-6', hue: 'var(--chart-1)' },
+  {
+    name: 'GPT-5.6',
+    className: 'dopa-float -top-4 -left-6',
+    hue: 'var(--chart-4)',
+  },
+  {
+    name: 'Claude',
+    className: 'dopa-float-alt top-16 -right-8',
+    hue: 'var(--chart-2)',
+  },
+  {
+    name: 'Gemini',
+    className: 'dopa-float bottom-24 -left-10',
+    hue: 'var(--chart-3)',
+  },
+  {
+    name: 'DeepSeek',
+    className: 'dopa-float-alt -bottom-4 right-6',
+    hue: 'var(--chart-1)',
+  },
 ]
 
 /** A friendly fake chat that shows beginners what they actually get. */
@@ -58,7 +75,7 @@ function HeroChatDemo() {
           className={`${chip.className} dopa-candy-shadow absolute z-10 hidden items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold sm:inline-flex`}
           style={{
             backgroundColor: 'var(--card)',
-            borderColor: 'color-mix(in oklch, ' + chip.hue + ' 35%, transparent)',
+            borderColor: `color-mix(in oklch, ${chip.hue} 35%, transparent)`,
             color: chip.hue,
           }}
         >
@@ -131,18 +148,25 @@ export function Hero(props: HeroProps) {
         <div className='flex flex-col items-start text-left lg:col-span-6'>
           <div className='dopa-fade-up bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-bold'>
             <Sparkles className='size-3.5' />
-            {t('Beginner friendly · Ready in 3 minutes')}
+            {t('Leave expensive monthly fees behind · Ready in 1 minute')}
           </div>
 
           <h1 className='dopa-fade-up dopa-delay-1 mt-6 text-[clamp(2.4rem,5vw,3.6rem)] leading-[1.12] font-extrabold tracking-tight text-balance'>
-            {t('One key to unlock')}
-            <br />
-            <span className='dopa-gradient-text'>{t('all the best AI models')}</span>
+            {t("Bring top-tier AI into everyone's daily life")}
+            <span className='dopa-gradient-text mt-2 block'>
+              {props.maxSavingsPercent && props.maxSavingsPercent > 0
+                ? t('The same powerful experience, {{percent}}% less', {
+                    percent: props.maxSavingsPercent,
+                  })
+                : t(
+                    'The same powerful experience, without the high monthly cost'
+                  )}
+            </span>
           </h1>
 
           <p className='dopa-fade-up dopa-delay-2 text-muted-foreground mt-6 max-w-xl text-base leading-relaxed text-pretty md:text-lg'>
             {t(
-              'No coding needed. Sign up, copy your key, paste it into the AI tool you already use — and chat with GPT, Claude, Gemini and more through one simple address.'
+              "No complicated setup and no expensive subscription barrier. Configure once, pay only as you go, and put the latest productivity within everyone's reach."
             )}
           </p>
 
@@ -178,15 +202,11 @@ export function Hero(props: HeroProps) {
           <div className='dopa-fade-up dopa-delay-4 text-muted-foreground mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm'>
             <span className='inline-flex items-center gap-1.5'>
               <Check className='text-success size-4' />
-              {t('No credit card required')}
+              {t('True pay-as-you-go: pay only for what you use')}
             </span>
             <span className='inline-flex items-center gap-1.5'>
               <Check className='text-success size-4' />
-              {t('Works with 30+ popular tools')}
-            </span>
-            <span className='inline-flex items-center gap-1.5'>
-              <Check className='text-success size-4' />
-              {t('Pay only for what you use')}
+              {t('Fully compatible with 30+ popular everyday tools')}
             </span>
           </div>
         </div>
