@@ -37,6 +37,8 @@ describe('client release page routes', () => {
     ['/client', ClientRoute],
     ['/download', DownloadRoute],
   ])('%s sends visitors to yeschoy.app', (_path, route) => {
-    expect(redirectTarget(route.options.beforeLoad)).toBe('https://yeschoy.app/')
+    expect(redirectTarget(route.options.beforeLoad)).toBe(
+      'https://yeschoy.app/'
+    )
   })
 })
